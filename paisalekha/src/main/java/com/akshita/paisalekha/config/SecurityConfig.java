@@ -9,26 +9,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-            // Disable CSRF for REST APIs
-            .csrf(csrf -> csrf.disable())
+	    http
+	        .csrf(csrf -> csrf.disable())
+	        .authorizeHttpRequests(auth -> auth
+	            .anyRequest().permitAll()   // 👈 TEMP TEST
+	        );
 
-            // Authorization rules
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/users/register",
-                    "/api/users/**",
-                    "/actuator/health"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-
-            // Disable default login form
-            .httpBasic(Customizer.withDefaults());
-
-        return http.build();
-    }
+	    return http.build();
+	}
 }

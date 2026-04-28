@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "income")
+@Table(name = "incomes")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,4 +33,54 @@ public class Income {
     private LocalDate incomeDate;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+	public Long getIncomeId() {
+		return incomeId;
+	}
+
+	public void setIncomeId(Long incomeId) {
+		this.incomeId = incomeId;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public LocalDate getIncomeDate() {
+		return incomeDate;
+	}
+
+	public void setIncomeDate(LocalDate incomeDate) {
+		this.incomeDate = incomeDate;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+    
+    
 }

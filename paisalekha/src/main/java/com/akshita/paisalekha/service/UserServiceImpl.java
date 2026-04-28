@@ -5,6 +5,7 @@ import com.akshita.paisalekha.Repository.UserRepository;
 import com.akshita.paisalekha.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,23 +19,10 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     
-
-    @Override
-    public User registerUser(User user) {
-
-        // Basic validations
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        // Password encoding will be added later (JWT phase)
-        return userRepository.save(user);
-    }
 
     @Override
     public User getUserByUsername(String username) {
@@ -56,5 +44,30 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteById(userId);
+    }
+    
+    public User registerUser(User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepository.save(user);
+    }
+    
+    public User loginUser(String username, String password) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        return user;
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

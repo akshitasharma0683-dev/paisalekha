@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "users")
 @Getter
@@ -24,12 +24,15 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
     private String role = "USER";
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    
 
 	public Long getUserId() {
 		return userId;
