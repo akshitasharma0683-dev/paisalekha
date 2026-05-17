@@ -25,7 +25,7 @@ public class Expense {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @Column(nullable = false)
@@ -47,8 +47,41 @@ public class Expense {
 		return expenseId;
 	}
 
-	public void setExpenseId(Long expenseId) {
+	@PrePersist
+	public void prePersist() {
+
+	    if (this.createdAt == null) {
+	        this.createdAt = LocalDateTime.now();
+	    }
+
+	    if (this.expenseDate == null) {
+	        this.expenseDate = LocalDate.now();
+	    }
+	    
+	}
+	
+	@PreUpdate
+	public void preUpdate() {
+	    this.updatedAt = LocalDateTime.now();
+	}
+
+	public Expense() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Expense(Long expenseId, User user, Category category, Double amount, String paymentMethod,
+			String description, LocalDate expenseDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
 		this.expenseId = expenseId;
+		this.user = user;
+		this.category = category;
+		this.amount = amount;
+		this.paymentMethod = paymentMethod;
+		this.description = description;
+		this.expenseDate = expenseDate;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 
 	public User getUser() {
@@ -114,6 +147,20 @@ public class Expense {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
+	public void setExpenseId(Long expenseId) {
+		this.expenseId = expenseId;
+	}
+
+	@Override
+	public String toString() {
+		return "Expense [expenseId=" + expenseId + ", user=" + user + ", category=" + category + ", amount=" + amount
+				+ ", paymentMethod=" + paymentMethod + ", description=" + description + ", expenseDate=" + expenseDate
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+	}
+	
+	
+	
     
     
 }

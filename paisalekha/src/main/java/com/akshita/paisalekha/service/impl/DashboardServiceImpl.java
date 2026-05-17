@@ -1,4 +1,4 @@
-package com.akshita.paisalekha.service;
+package com.akshita.paisalekha.service.impl;
 
 import java.util.List;
 
@@ -11,6 +11,8 @@ import com.akshita.paisalekha.Repository.CategoryRepository;
 import com.akshita.paisalekha.Repository.ExpenseRepository;
 import com.akshita.paisalekha.Repository.IncomeRepository;
 import com.akshita.paisalekha.dto.DashboardResponse;
+import com.akshita.paisalekha.service.DashboardService;
+import com.akshita.paisalekha.service.UserService;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {

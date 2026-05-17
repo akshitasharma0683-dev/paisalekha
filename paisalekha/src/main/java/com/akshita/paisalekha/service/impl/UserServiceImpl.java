@@ -1,4 +1,4 @@
-package com.akshita.paisalekha.service;
+package com.akshita.paisalekha.service.impl;
 
 import com.akshita.paisalekha.Entity.User;
 import com.akshita.paisalekha.Repository.UserRepository;
@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
     }
     
     public User registerUser(User user) {
+        System.out.println(" we are in service :registerUser "+user);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

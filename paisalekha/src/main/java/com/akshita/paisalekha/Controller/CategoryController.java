@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +20,7 @@ import com.akshita.paisalekha.service.CategoryService;
 import com.akshita.paisalekha.service.UserService;
 
 @RestController
-	@RequestMapping("/api/categories")
+	@RequestMapping("/categories")
 	public class CategoryController {
 
 	    @Autowired
@@ -31,8 +34,7 @@ import com.akshita.paisalekha.service.UserService;
 	            @RequestBody Category category,
 	            @RequestParam String username) {
 
-	        User user = userService.getUserByUsername(username);
-
+	    	User user = userService.findByUsername(username);
 	        return ResponseEntity.ok(
 	                categoryService.createCategory(category, user)
 	        );
@@ -42,11 +44,40 @@ import com.akshita.paisalekha.service.UserService;
 	    public ResponseEntity<List<Category>> getCategories(
 	            @RequestParam String username) {
 
-	        User user = userService.getUserByUsername(username);
+	        User user = userService.findByUsername(username);
 
 	        return ResponseEntity.ok(
 	                categoryService.getUserCategories(user)
 	        );
+	    }
+	    
+	    @PutMapping("/{categoryId}")
+	    public ResponseEntity<Category> updateCategory(
+	            @PathVariable Long categoryId,
+	            @RequestBody Category updatedCategory,
+	            @RequestParam String username) {
+
+	        User user = userService.findByUsername(username);
+
+	        Category category = categoryService.updateCategory(
+	                categoryId,
+	                updatedCategory,
+	                user
+	        );
+
+	        return ResponseEntity.ok(category);
+	    }
+	    
+	    @DeleteMapping("/{categoryId}")
+	    public ResponseEntity<Void> deleteCategory(
+	            @PathVariable Long categoryId,
+	            @RequestParam String username) {
+
+	        User user = userService.findByUsername(username);
+
+	        categoryService.deleteCategory(categoryId, user);
+
+	        return ResponseEntity.noContent().build();
 	    }
 	}
 

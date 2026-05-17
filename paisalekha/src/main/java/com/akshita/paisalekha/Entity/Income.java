@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "incomes")
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class Income {
 
     @Id
@@ -33,7 +31,26 @@ public class Income {
     private LocalDate incomeDate;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+
+        if (this.incomeDate == null) {
+            this.incomeDate = LocalDate.now();
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+    
 	public Long getIncomeId() {
 		return incomeId;
 	}
@@ -81,6 +98,38 @@ public class Income {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
+
+	public Income() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Income(Long incomeId, User user, Double amount, String source, LocalDate incomeDate,
+			LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
+		this.incomeId = incomeId;
+		this.user = user;
+		this.amount = amount;
+		this.source = source;
+		this.incomeDate = incomeDate;
+		this.createdAt = createdAt;
+		this.updatedAt=updatedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Income [incomeId=" + incomeId + ", user=" + user + ", amount=" + amount + ", source=" + source
+				+ ", incomeDate=" + incomeDate + ", createdAt=" + createdAt + "]";
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
     
+	
     
 }
