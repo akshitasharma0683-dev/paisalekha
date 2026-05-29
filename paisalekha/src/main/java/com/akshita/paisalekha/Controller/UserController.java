@@ -1,6 +1,7 @@
 package com.akshita.paisalekha.Controller;
 
 import com.akshita.paisalekha.Entity.User;
+import com.akshita.paisalekha.config.JwtUtil;
 import com.akshita.paisalekha.dto.LoginRequest;
 import com.akshita.paisalekha.service.UserService;
 
@@ -37,20 +38,31 @@ public class UserController {
 	    return ResponseEntity.noContent().build();
 	}
 	
+	@Autowired
+	private JwtUtil jwtUtil;
+
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
 	    try {
-			User user = userService.loginUser(
-			        request.getUsername(),
-			        request.getPassword()
-			);
 
-			return ResponseEntity.ok(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	        User user = userService.loginUser(
+	                request.getUsername(),
+	                request.getPassword()
+	        );
 
-		}
+	        String token =
+	                jwtUtil.generateToken(user.getUsername());
+
+	        return ResponseEntity.ok(token);
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity
+	                .status(HttpStatus.UNAUTHORIZED)
+	                .body("Invalid username or password");
+	    }
 	}
 }

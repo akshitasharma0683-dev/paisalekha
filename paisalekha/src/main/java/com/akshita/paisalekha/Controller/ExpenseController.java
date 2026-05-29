@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.akshita.paisalekha.Entity.Category;
@@ -30,9 +31,13 @@ public class ExpenseController {
     @PostMapping
     public ResponseEntity<Expense> createExpense(
             @RequestBody Expense expense,
-            @RequestParam String username,
             @RequestParam Long categoryId) {
 
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
+    	
         User user = userService.findByUsername(username);
 
         Category category = categoryRepository.findById(categoryId)
@@ -45,8 +50,13 @@ public class ExpenseController {
 
     // GET USER EXPENSES
     @GetMapping
-    public ResponseEntity<List<Expense>> getExpenses(
-            @RequestParam String username) {
+    public ResponseEntity<List<Expense>> getExpenses() {
+
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
 
         User user = userService.findByUsername(username);
 

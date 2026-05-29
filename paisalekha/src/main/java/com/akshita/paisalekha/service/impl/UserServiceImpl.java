@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByUsername(username);
+               
     }
 
     @Override
@@ -50,14 +50,21 @@ public class UserServiceImpl implements UserService {
         System.out.println(" we are in service :registerUser "+user);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        if (user.getRole() == null) {
+            user.setRole("ROLE_USER");
+        }
 
         return userRepository.save(user);
     }
     
     public User loginUser(String username, String password) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid password");
@@ -68,7 +75,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByUsername(username);
     }
 }
