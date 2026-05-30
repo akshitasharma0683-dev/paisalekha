@@ -27,7 +27,6 @@ public class Income {
 
     private String source;
 
-    @Column(nullable = false)
     private LocalDate incomeDate;
 
     private LocalDateTime createdAt = LocalDateTime.now();

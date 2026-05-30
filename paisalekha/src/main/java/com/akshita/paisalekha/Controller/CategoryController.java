@@ -47,8 +47,12 @@ import com.akshita.paisalekha.service.UserService;
 
 	    @GetMapping
 	    public ResponseEntity<List<Category>> getCategories(
-	            @RequestParam String username) {
-
+	            ) {
+	    	
+	    	String username = SecurityContextHolder
+	    	        .getContext()
+	    	        .getAuthentication()
+	    	        .getName();
 	        User user = userService.findByUsername(username);
 
 	        return ResponseEntity.ok(
@@ -59,9 +63,12 @@ import com.akshita.paisalekha.service.UserService;
 	    @PutMapping("/{categoryId}")
 	    public ResponseEntity<Category> updateCategory(
 	            @PathVariable Long categoryId,
-	            @RequestBody Category updatedCategory,
-	            @RequestParam String username) {
-
+	            @RequestBody Category updatedCategory
+	           ) {
+	    	String username = SecurityContextHolder
+	    	        .getContext()
+	    	        .getAuthentication()
+	    	        .getName();
 	        User user = userService.findByUsername(username);
 
 	        Category category = categoryService.updateCategory(
@@ -75,9 +82,12 @@ import com.akshita.paisalekha.service.UserService;
 	    
 	    @DeleteMapping("/{categoryId}")
 	    public ResponseEntity<Void> deleteCategory(
-	            @PathVariable Long categoryId,
-	            @RequestParam String username) {
-
+	            @PathVariable Long categoryId
+	            ) {
+	    	String username = SecurityContextHolder
+	    	        .getContext()
+	    	        .getAuthentication()
+	    	        .getName();
 	        User user = userService.findByUsername(username);
 
 	        categoryService.deleteCategory(categoryId, user);

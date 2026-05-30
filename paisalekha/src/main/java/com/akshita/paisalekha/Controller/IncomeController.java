@@ -42,8 +42,11 @@ public class IncomeController {
     // GET USER INCOME
     @GetMapping
     public ResponseEntity<List<Income>> getIncome(
-            @RequestParam String username) {
-
+            ) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         return ResponseEntity.ok(
@@ -55,9 +58,13 @@ public class IncomeController {
     @PutMapping("/{incomeId}")
     public ResponseEntity<Income> updateIncome(
             @PathVariable Long incomeId,
-            @RequestBody Income updatedIncome,
-            @RequestParam String username) {
-
+            @RequestBody Income updatedIncome
+            ) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
+    	
         User user = userService.findByUsername(username);
 
         Income income = incomeService.updateIncome(
@@ -72,9 +79,12 @@ public class IncomeController {
     // DELETE INCOME
     @DeleteMapping("/{incomeId}")
     public ResponseEntity<Void> deleteIncome(
-            @PathVariable Long incomeId,
-            @RequestParam String username) {
-
+            @PathVariable Long incomeId
+            ) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         incomeService.deleteIncome(incomeId, user);

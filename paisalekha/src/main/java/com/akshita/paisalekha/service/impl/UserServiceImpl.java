@@ -2,6 +2,7 @@ package com.akshita.paisalekha.service.impl;
 
 import com.akshita.paisalekha.Entity.User;
 import com.akshita.paisalekha.Repository.UserRepository;
+import com.akshita.paisalekha.service.CategoryService;
 import com.akshita.paisalekha.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+    
+    @Autowired
+    private CategoryService categoryService;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,8 +58,12 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == null) {
             user.setRole("ROLE_USER");
         }
+        User savedUser = userRepository.save(user);
 
-        return userRepository.save(user);
+        categoryService.createDefaultCategories(savedUser);
+
+        return savedUser;
+
     }
     
     public User loginUser(String username, String password) {

@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "expenses")
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class Expense {
 
     @Id
@@ -36,7 +34,6 @@ public class Expense {
 
     private String description;
 
-    @Column(nullable = false)
     private LocalDate expenseDate;
 
     private LocalDateTime createdAt = LocalDateTime.now();

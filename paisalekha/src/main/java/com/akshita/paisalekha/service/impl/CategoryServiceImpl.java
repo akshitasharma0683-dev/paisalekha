@@ -98,4 +98,32 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.delete(category);
     }
+    
+    public void createDefaultCategories(User user) {
+
+        List<String> categories = List.of(
+                "Food",
+                "Travel",
+                "Bills",
+                "Shopping",
+                "Entertainment",
+                "Healthcare",
+                "Education",
+                "Salary",
+                "Investment",
+                "Miscellaneous"
+        );
+
+        for (String name : categories) {
+
+            Category category = new Category();
+
+            category.setName(name);
+            category.setDescription("Default category");
+            category.setUser(user);
+            category.setIsDefault(true);
+
+            categoryRepository.save(category);
+        }
+    }
 }

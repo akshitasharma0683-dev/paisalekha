@@ -42,7 +42,12 @@ public class ExpenseController {
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+        
+        if (!Boolean.TRUE.equals(category.getIsDefault()) &&
+        	    !category.getUser().getUserId().equals(user.getUserId())) {
 
+        	    throw new RuntimeException("Category does not belong to logged-in user");
+        	}
         Expense saved = expenseService.createExpense(expense, user, category);
 
         return ResponseEntity.ok(saved);
@@ -70,14 +75,24 @@ public class ExpenseController {
     public ResponseEntity<Expense> updateExpense(
             @PathVariable Long expenseId,
             @RequestBody Expense updatedExpense,
-            @RequestParam String username,
             @RequestParam Long categoryId) {
-
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
+     
+        if (!Boolean.TRUE.equals(category.getIsDefault()) &&
+        	    !category.getUser().getUserId().equals(user.getUserId())) {
+
+        	    throw new RuntimeException("Category does not belong to logged-in user");
+        	}
+
+        
         Expense expense = expenseService.updateExpense(
                 expenseId,
                 updatedExpense,
@@ -91,9 +106,11 @@ public class ExpenseController {
     // DELETE EXPENSE
     @DeleteMapping("/{expenseId}")
     public ResponseEntity<Void> deleteExpense(
-            @PathVariable Long expenseId,
-            @RequestParam String username) {
-
+            @PathVariable Long expenseId) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         expenseService.deleteExpense(expenseId, user);
@@ -104,8 +121,11 @@ public class ExpenseController {
     // WEEKLY EXPENSE
     @GetMapping("/weekly")
     public ResponseEntity<Double> getWeeklyExpense(
-            @RequestParam String username) {
-
+            ) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         return ResponseEntity.ok(
@@ -116,8 +136,11 @@ public class ExpenseController {
     // MONTHLY EXPENSE
     @GetMapping("/monthly")
     public ResponseEntity<Double> getMonthlyExpense(
-            @RequestParam String username) {
-
+            ) {
+    	String username = SecurityContextHolder
+    	        .getContext()
+    	        .getAuthentication()
+    	        .getName();
         User user = userService.findByUsername(username);
 
         return ResponseEntity.ok(
