@@ -121,7 +121,7 @@ The application follows a layered architecture that separates business logic, se
 
 ## Entity Relationship Diagram
 
-![ER Diagram](paisalekha/docs/er-diagram.png)
+![ER Diagram](paisalekha/docs/er-diagram.PNG)
 
 ### Relationships
 
