@@ -1,360 +1,174 @@
-# PaisaLekha 💸
+<h1 align="center">💸 ExpenseFlow</h1>
 
-A secure personal finance management backend application built using Java, Spring Boot, Spring Security, JWT Authentication, Hibernate, and PostgreSQL.
+<p align="center">
+  A secure personal finance backend where every user sees only their own money.<br/>
+  Track expenses and income, organise them by category, and get live spending analytics.
+</p>
 
-PaisaLekha helps users manage expenses, income, and categories while ensuring complete data isolation through JWT-based authentication and authorization.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-[17_or_21]-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Security-JWT-6DB33F?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge" />
+</p>
 
----
-
-## Project Overview
-
-Managing personal finances requires tracking income, expenses, and spending patterns efficiently. PaisaLekha provides a secure backend system that enables users to:
-
-* Manage personal expenses
-* Track income sources
-* Organize spending using categories
-* Analyze financial activity
-* Access only their own financial records
-
-The application follows modern backend development practices using layered architecture, RESTful APIs, and secure authentication mechanisms.
-
----
-
-## Tech Stack
-
-### Backend
-
-* Java 21
-* Spring Boot
-* Spring Security
-* Spring Data JPA
-* Hibernate ORM
-* Maven
-
-### Database
-
-* PostgreSQL
-
-### Security
-
-* JWT Authentication
-* BCrypt Password Encryption
-
-### Tools
-
-* Git
-* GitHub
-* Postman
+<p align="center">
+  <img src="https://raw.githubusercontent.com/akshitasharma0683-dev/Akshita_Sharma_Portfolio_website/main/assets/portfolioimage/expense.PNG" alt="ExpenseFlow API tested in Postman" width="800" />
+</p>
 
 ---
 
-## Features
+## ✨ Why this project
 
-### Authentication & Security
+Finance data is the kind of data where a security bug is a serious bug. So I built this backend around one rule: **a logged-in user can only ever read or change their own records**, and that rule is enforced on every request rather than assumed.
 
-* User Registration
-* User Login
-* JWT Token Generation
-* JWT-Based Authentication
-* BCrypt Password Hashing
-* Stateless Session Management
-* Protected API Endpoints
-* User Ownership Validation
-
-### Category Management
-
-* Create Categories
-* Update Categories
-* Delete Categories
-* User-Specific Categories
-* Default Categories
-* Category Ownership Validation
-
-### Expense Management
-
-* Create Expenses
-* Update Expenses
-* Delete Expenses
-* Category-Based Expense Tracking
-* Weekly Expense Analytics
-* Monthly Expense Analytics
-* Payment Method Tracking
-
-### Income Management
-
-* Create Income Records
-* Update Income Records
-* Delete Income Records
-* Income Source Tracking
-
-### Dashboard Analytics
-
-* Total Income
-* Total Expenses
-* Current Balance
-* Recent Transactions
-* Expense Statistics
+| 🔐 Secure by design | 📊 Fast analytics | 🧱 Clean structure |
+|---|---|---|
+| JWT auth, BCrypt hashing, stateless sessions, ownership checks on every resource | Totals and statistics are computed inside PostgreSQL, not in Java loops | Controller → Service → Repository, with controllers depending on service interfaces |
 
 ---
 
-## System Architecture
+## 🚀 Features
 
-```text
-Client
-   ↓
-Spring Security Filter Chain
-   ↓
-JWT Authentication Filter
-   ↓
-Controller Layer
-   ↓
-Service Layer
-   ↓
-Repository Layer
-   ↓
-PostgreSQL Database
+| Area | What it does |
+|---|---|
+| **Authentication** | Register, login, JWT issuing and validation, BCrypt password hashing |
+| **Categories** | Per-user and default categories, with ownership validation |
+| **Expenses** | Create, update, delete, payment-method tracking, weekly and monthly analytics |
+| **Income** | Create, update, delete, income-source tracking |
+| **Dashboard** | Total income, total expenses, current balance, recent transactions, expense statistics |
+
+---
+
+## 🧭 How a request flows
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant F as JWT Filter
+    participant S as Service
+    participant D as PostgreSQL
+    C->>F: Request + Authorization: Bearer token
+    F->>F: Validate token, set SecurityContext
+    F->>S: Authenticated user
+    S->>S: Check the resource belongs to this user
+    S->>D: Query
+    D-->>C: Only that user's data
 ```
 
-The application follows a layered architecture that separates business logic, security, API handling, and persistence concerns.
+## 🗂️ Data model
 
----
-
-## Entity Relationship Diagram
-
-![ER Diagram](paisalekha/docs/er-diagram.PNG)
-
-### Relationships
-
-* One User → Many Categories
-* One User → Many Expenses
-* One User → Many Income Records
-* One Category → Many Expenses
-
----
-
-## Authentication Flow
-
-```text
-User Login
-    ↓
-Credentials Validated
-    ↓
-JWT Token Generated
-    ↓
-Client Stores Token
-    ↓
-Token Sent In Authorization Header
-    ↓
-JWT Filter Validates Token
-    ↓
-User Authenticated
-    ↓
-Protected Resource Access Granted
+```mermaid
+erDiagram
+    USER ||--o{ CATEGORY : owns
+    USER ||--o{ EXPENSE : records
+    USER ||--o{ INCOME : records
+    CATEGORY ||--o{ EXPENSE : groups
 ```
 
 ---
 
-## Security Implementation
+## 🧠 Engineering decisions (and why)
 
-### Password Encryption
-
-Passwords are encrypted before persistence using BCrypt.
-
-```java
-passwordEncoder.encode(password);
-```
-
-### JWT Authentication
-
-JWT tokens are generated after successful login and validated on every protected request.
-
-### Ownership Validation
-
-Users can only access:
-
-* Their own expenses
-* Their own income records
-* Their own categories
-
-This prevents unauthorized access to another user's financial data.
-
----
-
-## Key Engineering Decisions
-
-### Layered Architecture
-
-Controllers depend on service abstractions instead of implementation classes.
-
-Benefits:
-
-* Better Maintainability
-* Easier Testing
-* Cleaner Code Organization
-
----
-
-### Database-Level Aggregation
-
-Financial calculations are executed directly at the database level using custom JPA queries.
-
-Example:
-
+**1. Aggregation in the database**
 ```java
 @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.user = :user")
 ```
+Balances and statistics are calculated by PostgreSQL, so the app doesn't load every record into memory. It uses less memory and stays quick as data grows.
 
-Benefits:
+**2. Ownership checked on every operation**
+The authenticated user is read from the JWT and compared with the resource's owner before anything is read, changed or deleted. This prevents one user from reaching another's financial records.
 
-* Reduced Memory Usage
-* Faster Aggregation
-* Improved Performance
+**3. Controllers depend on interfaces**
+Business logic is separate from API handling, which keeps the code easier to maintain and test.
 
----
-
-### Automatic Entity Initialization
-
-JPA lifecycle hooks are used to automatically initialize:
-
-* Timestamps
-* Default Roles
-* Entity Metadata
+**4. Lifecycle hooks for entity setup**
+JPA lifecycle callbacks set timestamps, default roles and metadata automatically, so none of it is forgotten in the service code.
 
 ---
 
-## Challenges & Solutions
+## 🐛 Problems I ran into
 
-### Challenge 1: Securing APIs with JWT
-
-**Problem**
-
-After implementing JWT authentication, protected endpoints were returning authorization errors.
-
-**Solution**
-
-Implemented a custom JWT filter and populated Spring Security's SecurityContextHolder after successful token validation.
+| Problem | How I solved it |
+|---|---|
+| Protected endpoints returned authorization errors after adding JWT | Wrote a custom JWT filter that fills Spring Security's `SecurityContextHolder` once the token is validated |
+| Users must never see each other's data | Extract the user from the token and check ownership before every business operation |
+| Plain-text passwords are unsafe | Hash with BCrypt before saving, and verify with BCrypt at login |
 
 ---
 
-### Challenge 2: Preventing Unauthorized Data Access
+## 🔌 API
 
-**Problem**
+<details>
+<summary><b>View all endpoints</b></summary>
 
-Users should never access categories, expenses, or income records belonging to another user.
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/user/register` | Create an account |
+| POST | `/user/login` | Log in and receive a JWT |
+| DELETE | `/user/{userId}` | [Delete own account: confirm ownership is checked] |
+| POST / GET | `/categories` | Create / list categories |
+| PUT / DELETE | `/categories/{id}` | Update / delete a category |
+| POST / GET | `/expenses` | Create / list expenses |
+| PUT / DELETE | `/expenses/{id}` | Update / delete an expense |
+| GET | `/expenses/weekly` · `/expenses/monthly` | Spending analytics |
+| POST / GET | `/income` | Create / list income |
+| PUT / DELETE | `/income/{id}` | Update / delete income |
+| GET | `/dashboard` | Balance, totals, recent transactions |
 
-**Solution**
+</details>
 
-Implemented ownership validation using the authenticated user extracted from JWT tokens before performing business operations.
-
----
-
-### Challenge 3: Secure Password Storage
-
-**Problem**
-
-Storing passwords directly in the database is insecure.
-
-**Solution**
-
-Integrated BCrypt password hashing before persistence and BCrypt matching during login.
-
----
-
-## REST API Overview
-
-### User APIs
-
+**Quick example**
 ```http
-POST /user/register
 POST /user/login
-DELETE /user/{userId}
+{ "email": "user@example.com", "password": "••••••••" }
 ```
-
-### Category APIs
-
-```http
-POST /categories
-GET /categories
-PUT /categories/{id}
-DELETE /categories/{id}
+```json
+{ "token": "eyJhbGciOi..." }
 ```
-
-### Expense APIs
-
-```http
-POST /expenses
-GET /expenses
-PUT /expenses/{id}
-DELETE /expenses/{id}
-GET /expenses/weekly
-GET /expenses/monthly
-```
-
-### Income APIs
-
-```http
-POST /income
-GET /income
-PUT /income/{id}
-DELETE /income/{id}
-```
-
-### Dashboard APIs
-
-```http
-GET /dashboard
-```
+Send the token on later requests as `Authorization: Bearer <token>`.
 
 ---
 
-## Future Enhancements
-
-* DTO-Based Architecture
-* Request Validation
-* Global Exception Handling
-* Spring AI Financial Insights
-* Docker Deployment
-* CI/CD Pipeline
-* Budget Planning
-* Email Notifications
-* React Frontend Integration
-
----
-
-## Local Setup
-
-### Clone Repository
+## ▶️ Run it locally
 
 ```bash
 git clone <repository-url>
+cd <repository-folder>
 ```
-
-### Create Database
-
-```sql
-CREATE DATABASE expense_tracker;
-```
-
-### Configure Application Properties
-
+1. Create a database: `CREATE DATABASE expense_tracker;`
+2. Set your connection details (use environment variables, never commit real credentials):
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/expense_tracker
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 ```
-
-### Run Application
-
+3. Start it:
 ```bash
 mvn spring-boot:run
 ```
 
+## 🧪 Tests
+```bash
+mvn test
+```
+[One line on what's covered, e.g. "service-layer unit tests with JUnit 5 and Mockito". Delete this section if tests don't run yet.]
+
 ---
 
-## Author
+## 🗺️ Roadmap
 
-Akshita Sharma
+- [ ] React frontend (in progress)
+- [ ] CI/CD with GitHub Actions
+- [ ] Docker deployment and a live demo
+- [ ] Budget planning and email notifications
 
-Java Backend Developer | Spring Boot Developer
+---
 
-Focused on building secure and scalable backend applications using Java, Spring Boot, REST APIs, PostgreSQL, and modern backend engineering practices.
+## 👩‍💻 Author
+
+**Akshita Sharma** · Java / Full-Stack Developer
+[LinkedIn](https://www.linkedin.com/in/akshita-sharma-188773219/) · akshitasharma0683@gmail.com
+
+<p align="center"><sub>If this project helped you, a ⭐ is appreciated.</sub></p>
